@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+        <title>Lokasi Bangunan Pondok Pesantren Al-MUnawwir</title>
+        <link rel="icon" type="image/x-icon" href="assets/image/masjid.jpg" /> 
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+        <link href="css/styles.css" rel="stylesheet" />
+
+        <link href='https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.css' rel='stylesheet' />
+        <script src='https://api.mapbox.com/mapbox-gl-js/v3.15.0/mapbox-gl.js'></script>
+        
+        <style>
+            /* Style kustom untuk Mapbox, agar peta mengisi container */
+            #map {
+                width: 100%;
+                height: 100%; 
+            }
+            .bg-image {
+                background-color: #f8f9fa;
+            }
+        </style>
+    </head>
+    <body>
+        
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container">
+                <a class="navbar-brand" style="color: rgb(20, 85, 85); font-weight: bold;" href="#!">Pondok Pesantren Al-Munawwir</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" 
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                        <li class="nav-item"><a class="nav-link" href="#!">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#!">About</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#!">Contact</a></li>
+                        <li class="nav-item"><a class="nav-link active" aria-current="page" href="#!">Peta</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <header class="bg-image py-5 border-bottom mb-4">
+            <div class="container">
+                <div class="text-center my-5">
+                    <h1 class="fw-bolder mb-3" style="color: #146655;">Lokasi Bangunan Pondok Pesantren Al-Munawwir</h1>
+                    <p class="lead mb-0" style="color: #146655;">Yogyakarta</p>
+                </div>
+            </div>
+        </header>
+
+        <section class="py-5">
+            <div class="container px-4 px-lg-5 my-5">
+                <div class="row gx-4 gx-lg-5 align-items-center">
+                    <div class="col-md-6">
+                        <div id="map" class="mb-5 mb-md-0" style="min-height: 400px; max-height: 700px;"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <h1 class="display-5 fw-bolder">Temukan Lokasi Bangunan</h1>
+                        
+                        <p class="lead">Peta interaktif ini menampilkan lokasi bangunan di kompleks Pondok Pesantren Al-Munawwir, terbagi menjadi Asrama Putra, Asrama Putri, dan Bangunan Umum.</p>
+                        <div class="mt-4">
+                            <h5 class="fw-bold">Keterangan Warna:</h5>
+                            <p><span style="background-color: #e1d59d; padding: 0 10px; border: 1px solid black;">&nbsp;</span> Asrama Putra</p>
+                            <p><span style="background-color: #ffe0a0; padding: 0 10px; border: 1px solid black;">&nbsp;</span> Asrama Putri</p>
+                            <p><span style="background-color: #ffb56e; padding: 0 10px; border: 1px solid black;">&nbsp;</span> Bangunan Umum</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <footer class="py-5 bg-dark">
+            <div class="container"><p class="m-0 text-center text-white">Pondok Pesantren Al-Munawwir &copy; 2025</p></div>
+        </footer>
+        
+        <script>
+            mapboxgl.accessToken = 'pk.eyJ1IjoicmFpaGFuYXJzeTIxMiIsImEiOiJjbWdkeTZva2sxamEyMmtzODQ4eWFzdjk5In0.KC33uquXS76GQrUMd-OwFA';
+            const map = new mapboxgl.Map({
+                container: 'map', 
+                style: 'mapbox://styles/mapbox/streets-v12', 
+                // PUSAT PETA DISESUAIKAN agar lebih dekat dengan koordinat GeoJSON Anda
+                center: [110.3615, -7.8268], 
+                zoom: 18 // Zoom diperketat agar poligon langsung terlihat
+            });
+
+            // Definisikan Popup
+            const popup = new mapboxgl.Popup({
+                closeButton: false,
+                closeOnClick: true
+            });
+
+            // GABUNGKAN SEMUA LOGIKA PEMUATAN GEOJSON DAN POPUP DI DALAM SATU map.on('load')
+            map.on('load', () => {
+                
+                // Pesan Debugging
+                console.log("Peta Mapbox berhasil dimuat. Jika poligon tidak muncul, periksa tab Network (F12) untuk kesalahan 404 pada file GeoJSON.");
+
+
+                // 1. Load Geojson Asrama Putra
+                map.addSource('Asrama_Putra', {
+                    type: 'geojson',
+                    data: 'assets/geojson/Asrama_Putra.geojson' 
+                });
+                map.addLayer({
+                    'id': 'Asrama_Putra_fill', 
+                    'type': 'fill',
+                    'source': 'Asrama_Putra', 
+                    'layout': {},
+                    'paint': {
+                        'fill-color': '#e1d59d',
+                        'fill-opacity': 1
+                    }
+                });
+                map.addLayer({
+                    'id': 'Asrama_Putra_outline', 
+                    'type': 'line',
+                    'source': 'Asrama_Putra', 
+                    'layout': {},
+                    'paint': {
+                        'line-color': 'black',
+                        'line-width': 1
+                    }
+                });
+                
+                // 2. Load Geojson Asrama Putri
+                map.addSource('Asrama_Putri', {
+                    type: 'geojson',
+                    data: 'assets/geojson/Asrama_Putri.geojson'
+                });
+                map.addLayer({
+                    'id': 'Asrama_Putri_fill', 
+                    'type': 'fill',
+                    'source': 'Asrama_Putri', 
+                    'layout': {},
+                    'paint': {
+                        'fill-color': '#ffe0a0',
+                        'fill-opacity': 1
+                    }
+                });
+                map.addLayer({
+                    'id': 'Asrama_Putri_outline', 
+                    'type': 'line',
+                    'source': 'Asrama_Putri', 
+                    'layout': {},
+                    'paint': {
+                        'line-color': 'black',
+                        'line-width': 1
+                    }
+                });
+
+                // 3. Load Geojson Bangunan Umum
+                map.addSource('Bangunan_Umum', {
+                    type: 'geojson',
+                    data: 'assets/geojson/Bangunan_Umum.geojson'
+                });
+                map.addLayer({
+                    'id': 'Bangunan_Umum_fill', 
+                    'type': 'fill',
+                    'source': 'Bangunan_Umum', 
+                    'layout': {},
+                    'paint': {
+                        'fill-color': '#ffb56e',
+                        'fill-opacity': 1
+                    }
+                });
+                map.addLayer({
+                    'id': 'Bangunan_Umum_outline', 
+                    'type': 'line',
+                    'source': 'Bangunan_Umum', 
+                    'layout': {},
+                    'paint': {
+                        'line-color': 'black',
+                        'line-width': 1
+                    }
+                });
+                
+                // =========================================================
+                // LOGIKA POPUP (Menggunakan ID Layer Fill)
+                // =========================================================
+
+                // Fungsi Reusable untuk Popup (untuk mengurangi pengulangan kode)
+                function setupPopup(layerId, title) {
+                    map.on('mouseenter', layerId, (e) => {
+                        map.getCanvas().style.cursor = 'pointer';
+                        const feature = e.features[0];
+                        // Menggunakan setHTML agar bisa menampilkan format yang lebih rapi
+                        popup.setLngLat(e.lngLat)
+                            .setHTML(`<strong>${title}:</strong><br>${feature.properties.Nama}`)
+                            .addTo(map);
+                    });
+
+                    map.on('mouseleave', layerId, () => {
+                        map.getCanvas().style.cursor = '';
+                        popup.remove();
+                    });
+                }
+
+                // Terapkan Popup
+                setupPopup('Asrama_Putra_fill', 'Asrama Putra');
+                setupPopup('Asrama_Putri_fill', 'Asrama Putri');
+                setupPopup('Bangunan_Umum_fill', 'Bangunan Umum');
+                
+                // Kursor untuk layer outline
+                map.on('mouseenter', 'Asrama_Putra_outline', () => { map.getCanvas().style.cursor = 'pointer'; });
+                map.on('mouseleave', 'Asrama_Putra_outline', () => { map.getCanvas().style.cursor = ''; });
+                map.on('mouseenter', 'Asrama_Putri_outline', () => { map.getCanvas().style.cursor = 'pointer'; });
+                map.on('mouseleave', 'Asrama_Putri_outline', () => { map.getCanvas().style.cursor = ''; });
+                map.on('mouseenter', 'Bangunan_Umum_outline', () => { map.getCanvas().style.cursor = 'pointer'; });
+                map.on('mouseleave', 'Bangunan_Umum_outline', () => { map.getCanvas().style.cursor = ''; });
+
+            });
+        </script>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="js/scripts.js"></script>
+    </body>
+</html>
